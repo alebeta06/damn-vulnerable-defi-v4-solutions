@@ -9,7 +9,7 @@ Use Damn Vulnerable DeFi to:
 - Sharpen your auditing and bug-hunting skills.
 - Learn how to detect, test and fix flaws in realistic scenarios to become a security-minded developer.
 - Benchmark smart contract security tooling.
-- Create educational content on smart contract security with articles, tutorials, talks, courses, workshops, trainings, CTFs, etc. 
+- Create educational content on smart contract security with articles, tutorials, talks, courses, workshops, trainings, CTFs, etc.
 
 ## Install
 
@@ -51,9 +51,3 @@ Challenges may have more than one possible solution.
 ## Troubleshooting
 
 You can ask the community for help in [the discussions section](https://github.com/theredguild/damn-vulnerable-defi/discussions).
-
-## Disclaimer
-
-All code, practices and patterns in this repository are DAMN VULNERABLE and for educational purposes only.
-
-DO NOT USE IN PRODUCTION.
