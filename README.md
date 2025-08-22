@@ -1,53 +1,56 @@
-# Damn Vulnerable DeFi
+# Damn Vulnerable DeFi v4 - Soluciones
 
-Damn Vulnerable DeFi is _the_ smart contract security playground for developers, security researchers and educators.
+Este repositorio contiene mis soluciones para los challenges de **Damn Vulnerable DeFi v4**, una plataforma educativa de seguridad de smart contracts.
 
-Perhaps the most sophisticated vulnerable set of Solidity smart contracts ever witnessed, it features flashloans, price oracles, governance, NFTs, DEXs, lending pools, smart contract wallets, timelocks, vaults, meta-transactions, token distributions, upgradeability and more.
+## Descripción
 
-Use Damn Vulnerable DeFi to:
+Damn Vulnerable DeFi es el playground de seguridad de smart contracts más sofisticado para desarrolladores, investigadores de seguridad y educadores. Contiene contratos intencionalmente vulnerables que cubren flashloans, price oracles, governance, NFTs, DEXs, lending pools, smart contract wallets, timelocks, vaults, meta-transacciones, distribuciones de tokens, upgradeability y más.
 
-- Sharpen your auditing and bug-hunting skills.
-- Learn how to detect, test and fix flaws in realistic scenarios to become a security-minded developer.
-- Benchmark smart contract security tooling.
-- Create educational content on smart contract security with articles, tutorials, talks, courses, workshops, trainings, CTFs, etc.
+## Challenges Resueltos
 
-## Install
+### Challenge 1 - Unstoppable
 
-1. Clone the repository.
-2. Checkout the latest release (for example, `git checkout v4.1.0`)
-3. Rename the `.env.sample` file to `.env` and add a valid RPC URL. This is only needed for the challenges that fork mainnet state.
-4. Either install [Foundry](https://book.getfoundry.sh/getting-started/installation), or use the [provided devcontainer](./.devcontainer/) (In VSCode, open the repository as a devcontainer with the command "Devcontainer: Open Folder in Container...")
-5. Run `forge build` to initialize the project.
+El challenge consiste en detener el contrato `UnstoppableVault`, que ofrece flash loans gratis hasta que termine un período de gracia. El objetivo es hacer que el vault deje de ofrecer flash loans explotando una vulnerabilidad en el sistema.
 
-## Usage
+#### Vulnerabilidad
 
-Each challenge is made up of:
+La vulnerabilidad está en la función `flashLoan` del contrato `UnstoppableVault`. Específicamente, la función verifica si los activos totales en el vault coinciden con el supply total de shares antes de proceder con el flash loan. Si esta condición no se cumple, el flash loan fallará.
 
-- A prompt located in `src/<challenge-name>/README.md`.
-- A set of contracts located in `src/<challenge-name>/`.
-- A [Foundry test](https://book.getfoundry.sh/forge/tests) located in `test/<challenge-name>/<ChallengeName>.t.sol`.
+#### Explotación
 
-To solve a challenge:
+Para explotar esta vulnerabilidad, puedes transferir una pequeña cantidad del token del vault directamente al vault. Esta acción hará que el balance de tokens del vault aumente sin acuñar nuevos shares, rompiendo así la invariante de que los activos totales deben ser iguales al supply total de shares. Como resultado, cualquier intento posterior de flash loan fallará, activando el contrato `UnstoppableMonitor` para pausar el vault y transferir la propiedad de vuelta al deployer.
 
-1. Read the challenge's prompt.
-2. Uncover the flaw(s) in the challenge's smart contracts.
-3. Code your solution in the corresponding test file.
-4. Try your solution with `forge test --mp test/<challenge-name>/<ChallengeName>.t.sol`.
+#### Código de Explotación
 
-> In challenges that restrict the number of transactions, you might need to run the test with the `--isolate` flag.
+En el contrato `UnstoppableChallenge`, la función `test_unstoppable` demuestra esta explotación:
 
-If the test passes, you've solved the challenge!
+```solidity
+function test_unstoppable() public checkSolvedByPlayer {
+    token.transfer(address(vault), 1);
+}
+```
 
-Challenges may have more than one possible solution.
+Esta función transfiere 1 token al vault, causando que la invariante del flash loan se rompa y deteniendo el vault.
 
-### Rules
+## Instalación y Uso
 
-- You must always use the `player` account.
-- You must not modify the challenges' initial nor final conditions.
-- You can code and deploy your own smart contracts.
-- You can use Foundry's cheatcodes to advance time when necessary.
-- You can import external libraries that aren't installed, although it shouldn't be necessary.
+1. Clona el repositorio
+2. Instala Foundry: `curl -L https://foundry.paradigm.xyz | bash`
+3. Ejecuta `forge build` para compilar
+4. Ejecuta los tests: `forge test --mp test/<challenge>/<ChallengeName>.t.sol`
 
-## Troubleshooting
+## Estructura del Proyecto
 
-You can ask the community for help in [the discussions section](https://github.com/theredguild/damn-vulnerable-defi/discussions).
+- `src/` - Contratos de los challenges
+- `test/` - Tests de Foundry con las soluciones
+- `lib/` - Dependencias (OpenZeppelin, Uniswap, Safe, etc.)
+
+## Disclaimer
+
+⚠️ **ADVERTENCIA**: Todo el código en este repositorio es INTENCIONALMENTE VULNERABLE y solo para propósitos educativos. NO USAR EN PRODUCCIÓN.
+
+## Recursos
+
+- [Damn Vulnerable DeFi](https://damnvulnerabledefi.xyz)
+- [Foundry Book](https://book.getfoundry.sh/)
+- [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts/)
